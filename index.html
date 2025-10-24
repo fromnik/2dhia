@@ -284,7 +284,7 @@ function startPetals(){
   const target  = document.getElementById('typeLine');
   const cursorSpan = target.querySelector('.cursor');
 
-  const line = "I know I hurt you. I am so sorry. Let me say what my heart could not say before. 🥀";
+  const line = "I know I hurt you. I am so sorry. Let me say what my heart could not say before. 🕊️";
   let i = 0;
   function typeNext(){
     target.innerHTML = line.slice(0,i) + '<span class="cursor"></span>';
@@ -395,7 +395,7 @@ document.getElementById('unlockForm').addEventListener('submit', function(e){
   const input = (document.getElementById('passcode').value || '').trim().toLowerCase();
   const msg   = document.getElementById('unlockMsg');
   if(input === PASSCODE){
-    msg.textContent = 'Unlocked — thank you for reading. 🙏';
+    msg.textContent = 'Unlocked — thank you sebab sudi baca. 🙏';
     // reveal letters with cinematic fade
     const letters = document.getElementById('letters');
     letters.style.opacity = 0;
