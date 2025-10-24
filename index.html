@@ -11,11 +11,11 @@
 
 <style>
   :root{
-    --bg:#120609;            /* near-black maroon */
-    --panel:#210a0b;         /* deep panel */
+    --bg:#120609;            
+    --panel:#210a0b;         
     --muted:#bfa6a6;
     --text:#f7eaea;
-    --accent:#9e1f2b;        /* deep rose */
+    --accent:#9e1f2b;        
     --glow: rgba(158,31,43,.18);
     --gold: #cfa76c;
   }
@@ -30,7 +30,7 @@
                 var(--bg);
     overflow-x:hidden;
   }
-  .container{width:min(1080px,94%); margin:inline:auto}
+  .container{width:min(1080px,94%); margin-inline:auto}
   header{position:sticky; top:0; z-index:40; padding:14px 0; background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,0)); border-bottom:1px solid rgba(255,255,255,.03)}
   .nav{display:flex; align-items:center; justify-content:space-between; gap:12px}
   .brand{font-family:"Great Vibes", "Playfair Display", serif; font-size:1.25rem; color:var(--text); letter-spacing:0.6px}
@@ -99,6 +99,25 @@
     0%,100%{ transform:scale(1) } 50%{ transform:scale(1.14) }
   }
 
+  /* Tap me hint */
+  #tapHint {
+    position: fixed;
+    bottom: 96px;
+    right: 22px;
+    color: var(--gold);
+    font-weight:600;
+    font-size:.85rem;
+    pointer-events:none;
+    opacity:1;
+    transform: translateX(-50%);
+  }
+  #tapHint.pulse { animation: pulse 1.2s infinite; }
+  @keyframes pulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 1; }
+    50% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+
   /* entrance overlay */
   #entranceOverlay{
     position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center;
@@ -118,23 +137,13 @@
   .btnProceed{ background: linear-gradient(90deg, #ff6b6b, #b10e1d); color:#fff; box-shadow: 0 10px 40px rgba(177,14,29,.28) }
   .btnLater{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.03) }
 
-  /* small responsive */
   @media (max-width:860px){ .hero{grid-template-columns:1fr} .letters-grid{grid-template-columns:1fr} #musicButton { right:16px; bottom:16px } }
-/* 🌟 Tap me hint pulse */
-@keyframes pulse {
-  0% { transform: translateX(-50%) scale(1); opacity: 1; }
-  50% { transform: translateX(-50%) scale(1.1); opacity: 0.8; }
-  100% { transform: translateX(-50%) scale(1); opacity: 1; }
-}
 
-#tapHint.pulse {
-  animation: pulse 1.2s infinite;
-}
 </style>
 </head>
 <body>
 
-<!-- falling petals container (petals spawn from JS) -->
+<!-- falling petals container -->
 <div id="petals-root" aria-hidden="true"></div>
 
 <!-- Entrance Overlay -->
@@ -202,22 +211,18 @@
         <div class="tag">Letter 1 — The Apology</div>
         <p>Dhia, I am sorry. For the words I used when you needed softness. For the silence when you needed my voice. I was flawed, and I hurt you in ways I cannot undo. I say sorry because I must — not to erase the past, but to acknowledge it fully.</p>
       </article>
-
       <article class="letter">
         <div class="tag">Letter 2 — What I Miss</div>
         <p>I miss the way your laugh filled even the quiet moments. I miss your little messages in the middle of the day, your patient listening, the way you made ordinary things feel safe. I took much of that for granted — and I am regretful every day.</p>
       </article>
-
       <article class="letter">
         <div class="tag">Letter 3 — If I Could Go Back</div>
         <p>If I could go back, I would listen twice as long as I speak. I would hold your hand through things I didn’t understand. I would choose care over pride every single time. I cannot change the past, but I can be better now.</p>
       </article>
-
       <article class="letter">
         <div class="tag">Letter 4 — My Promise</div>
         <p>I am not asking for forgiveness as a demand. I am asking for the chance to show change — patient, humble, consistent change. If you ever allow me a second chance, I will spend it proving these words are lived, not just written.</p>
       </article>
-
       <article class="letter">
         <div class="tag">Letter 5 — Always You</div>
         <p>No matter where life leads, my heart remembers you first. I will always wish your happiness, even if it is not with me. Thank you for every moment you gave — I carry them with care and regret, and I promise to be better.</p>
@@ -239,207 +244,7 @@
     </div>
   </section>
 
-  <!-- final message (cinematic overlay later) -->
   <section id="end" class="section" style="display:none">
     <div style="max-width:760px; margin-inline:auto; text-align:center">
       <div style="font-size:1.05rem; color:var(--muted)">If you’re reading this, thank you for giving me a chance to be heard.</div>
-      <div style="margin-top:16px; font-family:'Great Vibes', serif; font-size:1.4rem; color:var(--text)">— Nik 🌹</div>
-    </div>
-  </section>
-
-  <footer style="padding:36px 0 80px; text-align:center; color:var(--muted)">
-    <div style="max-width:760px; margin-inline:auto">Made with sincerity and regret — by Nik.</div>
-  </footer>
-</main>
-
-<!-- Music button & hidden player -->
-<div id="musicButton" aria-label="Play music" title="Play River Flows in You">
-  <span id="musicIcon" style="font-size:22px; color:#fff">▶️</span>
-  <div class="label">River Flows in You — Yiruma</div>
-</div>
-
-<div id="yt-container" style="position:fixed; left:-9999px; width:0; height:0; overflow:hidden;"><div id="ytplayer"></div></div>
-
-<!-- YouTube API -->
-<script src="https://www.youtube.com/iframe_api"></script>
-
-<script>
-/* ---------- Config ---------- */
-const PASSCODE = 'riverflows'; // case-insensitive
-
-/* ---------- Petals (spawn) ---------- */
-function spawnPetal(){
-  const root = document.getElementById('petals-root');
-  const el = document.createElement('div');
-  el.className = 'petal';
-  el.style.left = (Math.random()*100) + 'vw';
-  el.style.animationDuration = (6 + Math.random()*6) + 's';
-  el.style.opacity = (0.7 + Math.random()*0.3);
-  el.style.transform = 'translateY(0) rotate(' + (Math.random()*360) + 'deg) scale(' + (0.9 + Math.random()*0.3) + ')';
-  // slight horizontal drift via translateX animation using CSS variable
-  el.style.setProperty('--drift', (Math.random()*40 - 20) + 'px');
-  root.appendChild(el);
-  setTimeout(()=> el.remove(), 14000);
-}
-let petalInterval;
-function startPetals(){
-  if(petalInterval) return;
-  petalInterval = setInterval(spawnPetal, 550);
-}
-
-/* ---------- Entrance Typewriter & Buttons ---------- */
-(function(){
-  const overlay = document.getElementById('entranceOverlay');
-  const yesBtn  = document.getElementById('entranceYes');
-  const noBtn   = document.getElementById('entranceNo');
-  const target  = document.getElementById('typeLine');
-  const cursorSpan = target.querySelector('.cursor');
-
-  const line = "This page is only for you, Dhia. I know I hurt you — I am sorry. Let me say what my heart could not say before. 🌹";
-  let i = 0;
-  function typeNext(){
-    target.innerHTML = line.slice(0,i) + '<span class="cursor"></span>';
-    i++;
-    if(i <= line.length) setTimeout(typeNext, 28);
-    else cursorBlink();
-  }
-  function cursorBlink(){
-    const cur = target.querySelector('.cursor');
-    if(!cur) return;
-    setInterval(()=> cur.style.visibility = (cur.style.visibility === 'hidden' ? 'visible' : 'hidden'), 520);
-  }
-  typeNext();
-
-  yesBtn.addEventListener('click', ()=>{
-    overlay.style.transition = 'opacity .7s ease';
-    overlay.style.opacity = '0';
-    setTimeout(()=> {
-      overlay.style.display = 'none';
-      // start cinematic petals and small intro visual
-      startPetals();
-      // optionally scroll to unlock
-      document.getElementById('unlock').scrollIntoView({behavior:'smooth'});
-    }, 700);
-  });
-
-  noBtn.addEventListener('click', ()=>{
-    overlay.style.transition = 'opacity .4s ease';
-    overlay.style.opacity = '0';
-    setTimeout(()=> {
-      overlay.style.display = 'none';
-      const msg = document.createElement('div');
-      msg.style.position='fixed'; msg.style.left='50%'; msg.style.top='20%';
-      msg.style.transform='translateX(-50%)'; msg.style.color='var(--muted)';
-      msg.style.background='rgba(0,0,0,.5)'; msg.style.padding='12px 18px'; msg.style.borderRadius='10px';
-      msg.style.zIndex = 90;
-      msg.textContent = "It's okay. I'll wait, Dhia.";
-      document.body.appendChild(msg);
-      startPetals();
-      setTimeout(()=> msg.remove(), 2600);
-    }, 400);
-  });
-})();
-
-/* ---------- YouTube player & music button ---------- */
-let player, isPlaying = false;
-function onYouTubeIframeAPIReady(){
-  player = new YT.Player('ytplayer', {
-    height: '0',
-    width: '0',
-    videoId: '7maJOI3QMu0', // Yiruma - River Flows in You (common upload id)
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      loop: 1,
-      playlist: '7maJOI3QMu0',
-      modestbranding: 1,
-      rel: 0
-    },
-    events: {
-      onReady: (e) => {
-        e.target.mute(); // start muted so browsers allow autoplay
-        e.target.playVideo();
-        isPlaying = true;
-        updateMusicButton();
-      },
-      onStateChange: (e) => {
-        // sync state; (1 = playing)
-        isPlaying = (e.data === 1);
-        updateMusicButton();
-      }
-    }
-  });
-}
-
-const musicBtn = document.getElementById('musicButton');
-const musicIcon = document.getElementById('musicIcon');
-musicBtn.addEventListener('click', () => {
-  if(!player) return;
-  if(isPlaying){
-    player.pauseVideo();
-    isPlaying = false;
-  } else {
-    player.playVideo();
-    isPlaying = true;
-    // ensure audible
-    player.unMute();
-    player.setVolume(45);
-  }
-  updateMusicButton();
-});
-
-function updateMusicButton(){
-  if(isPlaying){
-    musicBtn.classList.add('playing');
-    musicIcon.textContent = '❤️';
-    musicBtn.setAttribute('aria-label','Pause River Flows in You');
-  } else {
-    musicBtn.classList.remove('playing');
-    musicIcon.textContent = '▶️';
-    musicBtn.setAttribute('aria-label','Play River Flows in You');
-  }
-}
-
-/* ---------- Unlock logic (passcode protected) ---------- */
-document.getElementById('unlockForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const input = (document.getElementById('passcode').value || '').trim().toLowerCase();
-  const msg   = document.getElementById('unlockMsg');
-  if(input === PASSCODE){
-    msg.textContent = 'Unlocked — thank you for reading. 🙏';
-    // reveal letters with cinematic fade
-    const letters = document.getElementById('letters');
-    letters.style.opacity = 0;
-    letters.style.display = 'block';
-    setTimeout(()=> { letters.style.transition = 'opacity .7s ease'; letters.style.opacity = 1; }, 40);
-    // gently scroll to letters
-    setTimeout(()=> letters.scrollIntoView({behavior:'smooth'}), 220);
-  } else {
-    msg.textContent = 'Passcode salah. Cuba lagi ya.';
-    msg.style.color = 'var(--muted)';
-  }
-});
-
-/* ---------- optional: show final section after reading ---------- */
-/* When user scrolls to bottom, reveal a cinematic final message */
-(function(){
-  let shown = false;
-  window.addEventListener('scroll', () => {
-    const endSection = document.getElementById('end');
-    if(!endSection || shown) return;
-    const rect = endSection.getBoundingClientRect();
-    if(rect.top < window.innerHeight * 0.75){
-      endSection.style.display = 'block';
-      endSection.style.opacity = 0;
-      setTimeout(()=> endSection.style.transition = 'opacity .8s ease', 20);
-      setTimeout(()=> endSection.style.opacity = 1, 40);
-      shown = true;
-    }
-  });
-})();
-
-/* ---------- start subtle petals silently so page isn't empty if entrance closed manually ---------- */
-startPetals();
-</script>
-</body>
-</html>
+      <div style="margin-top:16px; font-family
